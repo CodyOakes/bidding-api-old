@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
 
 const userSchema = new mongoose.Schema({
-  firebaseId: {type: String}, 
-  firstName: {type: String},
-  lastName: {type: String},
-  email: {type: String},
-  accessLvls: [{type: String}],
+  uid: { type: String, index: true, require: true },
+  email: { type: String, index: true, unique: true, require: true },
+  accessLvls: [{ type: String }],
 })
 
-module.exports = mongoose.model('User', userSchema)
+userSchema.plugin(uniqueValidator)
 
+module.exports = mongoose.model('User', userSchema)
