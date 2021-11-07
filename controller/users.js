@@ -58,22 +58,45 @@ const getUser = async (req, res, next) => {
 }
 
 const postUser = async (req, res, next) => {
-  const { displayName, phoneNumber, email, password, accessLvls, disabled } =
-    req.body
+  const {
+    email,
+    password,
+    firstName,
+    lastName,
+    phoneNumber,
+    disabled,
+    type,
+    address1,
+    address2,
+    city,
+    state,
+    zip,
+    accessLvls,
+    notes,
+  } = req.body
 
   try {
     const firebaseUser = await firebase.auth().createUser({
       email,
       password,
-      displayName,
+      displayName: `${firstName} ${lastName}`,
       phoneNumber,
       disabled,
     })
 
     const mongoUser = new User({
       uid: firebaseUser.uid,
+      firstName,
+      lastName,
       email,
+      type,
+      address1,
+      address2,
+      city,
+      state,
+      zip,
       accessLvls,
+      notes,
     })
 
     await mongoUser.save()
@@ -92,19 +115,41 @@ const postUser = async (req, res, next) => {
 
 const patchUser = async (req, res, next) => {
   const { id } = req.params
-  const { displayName, phoneNumber, email, accessLvls, disabled, password } =
-    req.body
-
+  const {
+    email,
+    password,
+    firstName,
+    lastName,
+    phoneNumber,
+    disabled,
+    type,
+    address1,
+    address2,
+    city,
+    state,
+    zip,
+    accessLvls,
+    notes,
+  } = req.body
   try {
     let mongoUser = await User.findOne({ uid: id })
     mongoUser.email = email
+    mongoUser.firstName = firstName
+    mongoUser.lastName = lastName
+    mongoUser.type = type
+    mongoUser.address1 = address1
+    mongoUser.address2 = address2
+    mongoUser.city = city
+    mongoUser.state = state
+    mongoUser.zip = zip
     mongoUser.accessLvls = accessLvls
+    mongoUser.dnotes = accessLvls
+    mongoUser.notes = notes
 
     const firebaseUser = await firebase.auth().updateUser(id, {
-      displayName,
+      displayName: `${firstName} ${lastName}`,
       phoneNumber,
       email,
-      accessLvls,
       disabled,
       password,
     })
